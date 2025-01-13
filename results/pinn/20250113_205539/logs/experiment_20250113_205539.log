@@ -1,0 +1,42 @@
+
+Experiment Results (20250113_205539)
+==============================
+Method: PINN
+
+System Characteristics:
+---------------------
+Natural Frequency: 0.36 Hz
+Damping Ratio: 0.022
+
+Configuration:
+-------------
+{
+  "m": 1.0,
+  "c": 0.1,
+  "k": 5.0,
+  "force_type": "sine",
+  "amplitude": 1.0,
+  "freq": 1.0,
+  "random_seed": 42,
+  "x0": 0.0,
+  "v0": 0.0,
+  "t_max": 10.0,
+  "dt": 0.02,
+  "noise_std": 0.05
+}
+
+Parameters:
+----------
+True parameters:      [1.000, 0.100, 5.000]
+Estimated parameters: [1.016, 0.098, 4.998]
+Parameter errors (%): [1.56, 2.18, 0.04]
+Force prediction RMSE: 0.001260
+
+Optimization Information:
+----------------------
+Final Loss: 0.012151
+Final Data Loss: 0.012151
+Final Physics Loss: 0.000000
+Device: cuda
+Optimization Success: True
+Message: PINN parameter estimation completed

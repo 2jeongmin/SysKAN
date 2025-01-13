@@ -1,0 +1,21 @@
+{
+    "least_squares": {
+        "true_params": [
+            1.0,
+            0.1,
+            5.0
+        ],
+        "estimated_params": [
+            1.0,
+            0.1,
+            5.0
+        ],
+        "errors": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "rmse": 0.0
+    },
+    "timestamp": "20250113_205844"
+}

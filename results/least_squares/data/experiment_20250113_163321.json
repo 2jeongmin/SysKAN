@@ -1,0 +1,34 @@
+{
+    "timestamp": "20250113_163321",
+    "method": "least_squares",
+    "configuration": {
+        "m": 1.0,
+        "c": 0.1,
+        "k": 5.0,
+        "force_type": "sine",
+        "amplitude": 1.0,
+        "freq": 1.0,
+        "random_seed": 99,
+        "x0": 0.0,
+        "v0": 0.0,
+        "t_max": 100.0,
+        "dt": 0.02,
+        "noise_std": 0.05
+    },
+    "true_parameters": [
+        1.0,
+        0.1,
+        5.0
+    ],
+    "estimated_parameters": [
+        1.0,
+        0.1,
+        5.0
+    ],
+    "parameter_errors": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "force_rmse": 0.0
+}
