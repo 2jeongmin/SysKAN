@@ -40,3 +40,206 @@ Message: Optimization terminated successfully.
 Iterations: 22
 Final Function Value: 0.000000
 ===============================
+
+
+Trial 1/10
+Initial guess: [0.39250504 0.56519720 44.26621952]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 19
+         Function evaluations: 84
+         Gradient evaluations: 21
+
+Optimization result for trial 1:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 3.410780e-11
+           x: [1.000e+00 1.000e-01 5.000e+00]
+         nit: 19
+        nfev: 84
+        njev: 21
+
+
+Trial 2/10
+Initial guess: [1.57265210 0.58711424 13.21024887]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 80
+         Gradient evaluations: 20
+
+Optimization result for trial 2:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 4.425989e-12
+           x: [1.000e+00 1.000e-01 5.000e+00]
+         nit: 16
+        nfev: 80
+        njev: 20
+
+
+Trial 3/10
+Initial guess: [0.82660297 0.07311540 44.84668012]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 7
+         Function evaluations: 52
+         Gradient evaluations: 13
+
+Optimization result for trial 3:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 6.584880e-09
+           x: [1.000e+00 9.997e-02 4.997e+00]
+         nit: 7
+        nfev: 52
+        njev: 13
+
+
+Trial 4/10
+Initial guess: [1.10822248 0.59183926 27.43720123]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 13
+         Function evaluations: 72
+         Gradient evaluations: 18
+
+Optimization result for trial 4:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 8.226470e-10
+           x: [1.000e+00 1.002e-01 5.000e+00]
+         nit: 13
+        nfev: 72
+        njev: 18
+
+
+Trial 5/10
+Initial guess: [0.96614386 0.15254188 46.38931095]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 10
+         Function evaluations: 64
+         Gradient evaluations: 16
+
+Optimization result for trial 5:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 5.240386e-11
+           x: [1.000e+00 1.000e-01 5.000e+00]
+         nit: 10
+        nfev: 64
+        njev: 16
+
+
+Trial 6/10
+Initial guess: [0.16809812 0.81466560 80.63780664]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 17
+         Function evaluations: 80
+         Gradient evaluations: 20
+
+Optimization result for trial 6:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 1.547149e-12
+           x: [1.000e+00 1.000e-01 5.000e+00]
+         nit: 17
+        nfev: 80
+        njev: 20
+
+
+Trial 7/10
+Initial guess: [0.07653756 0.91186528 60.89314754]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 20
+         Function evaluations: 88
+         Gradient evaluations: 22
+
+Optimization result for trial 7:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 6.047342e-12
+           x: [1.000e+00 9.999e-02 5.000e+00]
+         nit: 20
+        nfev: 88
+        njev: 22
+
+
+Trial 8/10
+Initial guess: [0.06135119 0.74487079 9.46370927]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 22
+         Function evaluations: 92
+         Gradient evaluations: 23
+
+Optimization result for trial 8:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 5.819868e-14
+           x: [1.000e+00 1.000e-01 5.000e+00]
+         nit: 22
+        nfev: 92
+        njev: 23
+
+
+Trial 9/10
+Initial guess: [0.03950019 0.39064784 77.85301366]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 76
+         Gradient evaluations: 19
+
+Optimization result for trial 9:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 1.131116e-09
+           x: [1.000e+00 1.000e-01 5.001e+00]
+         nit: 16
+        nfev: 76
+        njev: 19
+
+
+Trial 10/10
+Initial guess: [0.46773274 0.70838961 88.92791993]
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 20
+         Function evaluations: 88
+         Gradient evaluations: 22
+
+Optimization result for trial 10:
+     message: Optimization terminated successfully.
+     success: True
+      status: 0
+         fun: 5.380361e-12
+           x: [1.000e+00 9.999e-02 5.000e+00]
+         nit: 20
+        nfev: 88
+        njev: 22
+
+
+=== Final Results ===
+Best parameters: [0.99999993 0.09999991 5.00000464]
+Final residual: 5.819868e-14
+Total iterations: 22
+Function evaluations: 92
+Jacobian evaluations: 23
+====================
+
+Results for OLS saved successfully!
+Timestamp: 20250113_222717
+

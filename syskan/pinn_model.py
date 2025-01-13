@@ -5,9 +5,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from typing import Tuple, Dict
-import matplotlib.pyplot as plt
 from pathlib import Path
-import time
 from scipy.interpolate import interp1d
 from syskan.visualization import plot_training_curves
 
@@ -24,22 +22,27 @@ class PINN(nn.Module):
             layers.extend([
                 nn.Linear(input_dim, hidden_dim),
                 nn.Tanh(),
-                nn.LayerNorm(hidden_dim)  # Add layer normalization
+                nn.LayerNorm(hidden_dim)
             ])
             input_dim = hidden_dim
         
-        # Output layer for displacement
         layers.append(nn.Linear(hidden_dim, 1))
-        
         self.network = nn.Sequential(*layers)
         
-        # Initialize physical parameters with no prior knowledge
-        # Just use simple initial values and let the network learn from data
+        # Initialize physical parameters
         self.mass = nn.Parameter(torch.tensor(1.0, dtype=torch.float32))
         self.damping = nn.Parameter(torch.tensor(1.0, dtype=torch.float32))
         self.stiffness = nn.Parameter(torch.tensor(1.0, dtype=torch.float32))
         
-        # Initialize weights using Xavier initialization
+        # Register normalizers as buffers (will be saved with model)
+        self.register_buffer('x_mean', torch.tensor(0.0))
+        self.register_buffer('x_std', torch.tensor(1.0))
+        self.register_buffer('t_mean', torch.tensor(0.0))
+        self.register_buffer('t_std', torch.tensor(1.0))
+        self.register_buffer('f_mean', torch.tensor(0.0))
+        self.register_buffer('f_std', torch.tensor(1.0))
+        
+        # Initialize weights
         self._initialize_weights()
     
     def _initialize_weights(self):
@@ -49,37 +52,48 @@ class PINN(nn.Module):
                 nn.init.xavier_normal_(m.weight)
                 nn.init.zeros_(m.bias)
     
+    def normalize_t(self, t):
+        """Normalize time input"""
+        return (t - self.t_mean) / self.t_std
+    
+    def normalize_x(self, x):
+        """Normalize displacement"""
+        return (x - self.x_mean) / self.x_std
+    
+    def denormalize_x(self, x_normalized):
+        """Denormalize displacement"""
+        return x_normalized * self.x_std + self.x_mean
+    
     def forward(self, t: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        """
-        Forward pass of the PINN
-        
-        Args:
-            t: Time tensor [batch_size, 1]
-            
-        Returns:
-            Tuple of (displacement, velocity, acceleration)
-        """
+        """Forward pass computing displacement, velocity, and acceleration"""
         t.requires_grad_(True)
+        t_normalized = self.normalize_t(t)
         
-        # Compute displacement
-        x = self.network(t)
+        # Compute normalized displacement
+        x_normalized = self.network(t_normalized)
         
-        # Compute velocity and acceleration using automatic differentiation
-        ones = torch.ones_like(x)
+        # Compute derivatives with respect to normalized time
+        ones = torch.ones_like(x_normalized)
         
-        v = torch.autograd.grad(
-            x, t, 
+        # Chain rule for derivatives
+        v_normalized = torch.autograd.grad(
+            x_normalized, t,
             grad_outputs=ones,
             create_graph=True,
             retain_graph=True
-        )[0]
+        )[0] * self.t_std / self.x_std
         
-        a = torch.autograd.grad(
-            v, t,
+        a_normalized = torch.autograd.grad(
+            v_normalized, t,
             grad_outputs=ones,
             create_graph=True,
             retain_graph=True
-        )[0]
+        )[0] * self.t_std / self.x_std
+        
+        # Denormalize outputs
+        x = self.denormalize_x(x_normalized)
+        v = v_normalized * (self.x_std / self.t_std)
+        a = a_normalized * (self.x_std / self.t_std**2)
         
         return x, v, a
     
@@ -90,36 +104,25 @@ class PINN(nn.Module):
                     a_data: torch.Tensor,
                     f_data: torch.Tensor,
                     t_phys: torch.Tensor) -> Dict[str, torch.Tensor]:
-        """
-        Compute both data and physics losses
-        
-        Args:
-            t_data: Time points for data fitting
-            x_data: True displacement data
-            v_data: True velocity data
-            a_data: True acceleration data
-            f_data: External force data
-            t_phys: Time points for physics constraint
-            
-        Returns:
-            Dictionary containing individual and total losses
-        """
+        """Compute normalized losses"""
         # Data fitting
         x_pred, v_pred, a_pred = self(t_data)
         
-        # Scale factor to prevent loss explosion
-        scale_factor = 1e-3
+        # Scale factors for different components
+        scale_factor = 1e-6
+        w_x, w_v, w_a = 1.0, 0.1, 0.01
         
-        data_loss_x = torch.mean((x_pred - x_data) ** 2)
-        data_loss_v = torch.mean((v_pred - v_data) ** 2)
-        data_loss_a = torch.mean((a_pred - a_data) ** 2)
+        # Normalized MSE losses
+        data_loss_x = torch.mean((x_pred - x_data)**2 / self.x_std**2)
+        data_loss_v = torch.mean((v_pred - v_data)**2 * (self.t_std**2 / self.x_std**2))
+        data_loss_a = torch.mean((a_pred - a_data)**2 * (self.t_std**4 / self.x_std**2))
         
-        data_loss = scale_factor * (data_loss_x + data_loss_v + data_loss_a)
+        data_loss = scale_factor * (w_x * data_loss_x + w_v * data_loss_v + w_a * data_loss_a)
         
-        # Physics constraint with force interpolation
+        # Physics constraint with normalized forces
         x_phys, v_phys, a_phys = self(t_phys)
         
-        # Interpolate force values for physics points
+        # Interpolate force values
         t_np = t_data.detach().cpu().numpy().flatten()
         f_np = f_data.detach().cpu().numpy().flatten()
         t_phys_np = t_phys.detach().cpu().numpy().flatten()
@@ -128,15 +131,16 @@ class PINN(nn.Module):
         f_phys_np = f_interpolator(t_phys_np)
         f_phys = torch.tensor(f_phys_np, dtype=torch.float32).reshape(-1, 1).to(t_phys.device)
         
-        # Compute normalized physics residual
+        # Normalized physics residual
         physics_residual = (self.mass * a_phys + 
                           self.damping * v_phys +
                           self.stiffness * x_phys - 
-                          f_phys)
-        physics_loss = scale_factor * torch.mean(physics_residual ** 2)
+                          f_phys) / self.f_std
+        
+        physics_loss = scale_factor * torch.mean(physics_residual**2)
         
         # Total loss with balanced weighting
-        lambda_physics = 1.0  # Adjust if needed
+        lambda_physics = 0.1
         total_loss = data_loss + lambda_physics * physics_loss
         
         return {
@@ -159,22 +163,21 @@ def train_pinn(model: PINN,
                learning_rate: float = 1e-3,
                device: str = 'cpu',
                verbose: bool = True) -> Tuple[PINN, Dict]:
-    """
-    Train the PINN model
-    
-    Args:
-        model: PINN model instance
-        t, x, v, a, f: Training data arrays
-        n_epochs: Number of training epochs
-        batch_size: Batch size for training
-        learning_rate: Initial learning rate
-        device: Device to run the model on
-        verbose: Whether to print progress
-        
-    Returns:
-        Trained model and training history
-    """
+    """Train the PINN model with normalized data"""
     model = model.to(device)
+    
+    # Compute normalization statistics
+    t_mean, t_std = t.mean(), t.std()
+    x_mean, x_std = x.mean(), x.std()
+    f_mean, f_std = f.mean(), f.std()
+    
+    # Update model's normalization parameters
+    model.t_mean.data = torch.tensor(t_mean, device=device)
+    model.t_std.data = torch.tensor(t_std, device=device)
+    model.x_mean.data = torch.tensor(x_mean, device=device)
+    model.x_std.data = torch.tensor(x_std, device=device)
+    model.f_mean.data = torch.tensor(f_mean, device=device)
+    model.f_std.data = torch.tensor(f_std, device=device)
     
     # Convert data to PyTorch tensors
     t_tensor = torch.FloatTensor(t.reshape(-1, 1)).to(device)
@@ -187,10 +190,10 @@ def train_pinn(model: PINN,
     dataset = TensorDataset(t_tensor, x_tensor, v_tensor, a_tensor, f_tensor)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     
-    # Generate collocation points for physics constraint
+    # Physics collocation points
     t_phys = torch.linspace(t.min(), t.max(), 1000).reshape(-1, 1).to(device)
     
-    # Optimizer with parameter groups and smaller learning rates
+    # Optimizer with parameter groups
     optimizer = optim.AdamW([
         {'params': model.network.parameters(), 'lr': learning_rate * 0.1},
         {'params': [model.mass, model.damping, model.stiffness], 'lr': learning_rate * 0.01}
@@ -236,10 +239,7 @@ def train_pinn(model: PINN,
                 # Optimization step
                 optimizer.zero_grad()
                 total_loss.backward()
-                
-                # Gradient clipping
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-                
                 optimizer.step()
                 
                 # Accumulate batch losses
@@ -247,7 +247,7 @@ def train_pinn(model: PINN,
                 epoch_losses['data'] += losses['data_loss'].item()
                 epoch_losses['physics'] += losses['physics_loss'].item()
             
-            # Average losses over batches
+            # Average losses
             n_batches = len(dataloader)
             epoch_losses = {k: v / n_batches for k, v in epoch_losses.items()}
             
@@ -300,60 +300,31 @@ def estimate_parameters_pinn(x: np.ndarray,
                            timestamp: str = None,
                            base_dir: str = None,
                            verbose: bool = False) -> Tuple[np.ndarray, Dict]:
-    """
-    Estimate system parameters using PINN
-    
-    Args:
-        x, v, a: System response data
-        f: External force data
-        method: Estimation method (unused, kept for compatibility)
-        timestamp: Timestamp for saving results
-        base_dir: Base directory for saving results
-        verbose: Whether to print progress
-        
-    Returns:
-        Estimated parameters and optimization information
-    """
+    """Estimate system parameters using PINN with normalized data"""
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
     # Generate time vector
     t = np.linspace(0, 10, len(x))
     
-    # Try multiple random initializations
-    n_trials = 5
-    best_model = None
-    best_history = None
-    best_loss = float('inf')
+    # Create and train model
+    model = PINN()
+    trained_model, history = train_pinn(
+        model, t, x, v, a, f,
+        device=device,
+        verbose=verbose
+    )
     
-    for trial in range(n_trials):
-        if verbose:
-            print(f"\nTrial {trial + 1}/{n_trials}")
-        
-        # Create and train PINN model
-        model = PINN()
-        trained_model, history = train_pinn(
-            model, t, x, v, a, f,
-            device=device,
-            verbose=verbose
-        )
-        
-        final_loss = history['total_loss'][-1]
-        if final_loss < best_loss:
-            best_loss = final_loss
-            best_model = trained_model
-            best_history = history
-    
-    # Get final parameters from best model
+    # Get final parameters
     final_params = np.array([
-        best_model.mass.item(),
-        best_model.damping.item(),
-        best_model.stiffness.item()
+        trained_model.mass.item(),
+        trained_model.damping.item(),
+        trained_model.stiffness.item()
     ])
     
     # Save training curves if requested
     if base_dir and timestamp:
-        plot_paths = plot_training_curves(best_history, base_dir, timestamp)
+        plot_paths = plot_training_curves(history, base_dir, timestamp)
     else:
         plot_paths = {}
     
@@ -361,15 +332,13 @@ def estimate_parameters_pinn(x: np.ndarray,
     optimization_info = {
         'success': True,
         'message': 'PINN parameter estimation completed',
-        'n_trials': n_trials,
-        'best_trial_loss': best_loss,
-        'n_epochs': len(best_history['total_loss']),
-        'final_loss': best_history['total_loss'][-1],
+        'n_epochs': len(history['total_loss']),
+        'final_loss': history['total_loss'][-1],
         'training_history': {
-            'total_loss': best_history['total_loss'][-1],
-            'data_loss': best_history['data_loss'][-1],
-            'physics_loss': best_history['physics_loss'][-1],
-            'final_parameters': best_history['parameters'][-1]
+            'total_loss': history['total_loss'][-1],
+            'data_loss': history['data_loss'][-1],
+            'physics_loss': history['physics_loss'][-1],
+            'final_parameters': history['parameters'][-1]
         },
         'plot_paths': plot_paths,
         'device': str(device)

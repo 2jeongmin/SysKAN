@@ -1,3 +1,5 @@
 Starting experiment with method: pinn
 
 Starting parameter estimation...
+
+Error during data analysis: Expected state_dict to be dict-like, got <class 'NoneType'>.
