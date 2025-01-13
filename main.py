@@ -33,8 +33,8 @@ def run_experiments(methods, config_name=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run system parameter estimation experiments')
     parser.add_argument('--methods', nargs='+', 
-                      choices=['least_squares', 'mlp', 'pinn'],  # mlp는 내부적으로 sindy 사용
-                      default=['least_squares', 'mlp', 'pinn'],
+                      choices=['ols', 'mlp', 'pinn'],  # mlp는 내부적으로 sindy 사용
+                      default=['ols', 'mlp', 'pinn'],
                       help='Methods to use for parameter estimation')
     parser.add_argument('--config', type=str,
                       help='Name of config file in configs directory (without .json extension)')

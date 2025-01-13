@@ -1,11 +1,12 @@
 import os
 import json
+import logging
 from datetime import datetime
 import numpy as np
 from pathlib import Path
 from syskan.data_generator import newmark_beta_1dof
 from syskan.evaluation import calculate_error, calculate_rmse
-from syskan.parameter_estimation import estimate_parameters_least_squares
+from syskan.parameter_estimation import estimate_parameters_ols
 from syskan.mlp_model import estimate_parameters_mlp
 from syskan.pinn_model import estimate_parameters_pinn
 from syskan.visualization import save_all_figures
@@ -15,14 +16,17 @@ class Experiment:
         self.method = method
         self.config = config
         self.timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.logger = None  # logger 초기화 추가
         self.create_directories()
-        
+        self.setup_logger() 
+              
         # 추정 메서드 매핑
         self.estimators = {
-            'least_squares': estimate_parameters_least_squares,
+            'ols': estimate_parameters_ols,
             'mlp': estimate_parameters_mlp,
             'pinn': estimate_parameters_pinn
         }
+
 
     def create_directories(self):
         """Create timestamped directories for experiment results"""
@@ -36,6 +40,32 @@ class Experiment:
         ]
         for dir_path in base_dirs:
             dir_path.mkdir(parents=True, exist_ok=True)
+
+    def setup_logger(self):
+        """Set up logger for the experiment"""
+        log_file = self.result_dir / 'logs' / f'experiment_{self.timestamp}.log'
+        
+        # 기존 핸들러 제거
+        if self.logger and self.logger.handlers:
+            self.logger.handlers.clear()
+        
+        # 로거 설정
+        self.logger = logging.getLogger(f'ExperimentLogger_{self.timestamp}')
+        self.logger.setLevel(logging.INFO)
+        
+        # 파일 핸들러 설정
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setLevel(logging.INFO)
+        
+        # 포매터 설정
+        formatter = logging.Formatter('%(message)s')
+        file_handler.setFormatter(formatter)
+        
+        # 핸들러 추가
+        self.logger.addHandler(file_handler)
+        
+        # 상위 로거로 전파하지 않음
+        self.logger.propagate = False
 
     def generate_data(self):
         """Generate simulation data using given configuration"""
@@ -56,21 +86,37 @@ class Experiment:
             raise ValueError(f"Method {self.method} not implemented")
             
         try:
+            # 최적화 시작 로깅
+            self.logger.info("\nStarting parameter estimation...")
+            
+            # 메서드별로 다른 파라미터 설정
+            common_params = {
+                'method': self.method,
+                'timestamp': self.timestamp,
+                'base_dir': self.result_dir,
+                'verbose': True
+            }
+            
+            # OLS 메서드의 경우에만 logger 전달
+            if self.method == 'ols':
+                common_params['logger'] = self.logger
+            
             # 파라미터 추정 수행
             estimator = self.estimators[self.method]
             estimated_params, opt_info = estimator(
                 data['x'], data['v'], data['a'], data['f'],
-                method=self.method,
-                timestamp=self.timestamp,
-                base_dir=self.result_dir
+                **common_params
             )
             
             # 오차 및 RMSE 계산
             errors = calculate_error(data['true_params'], estimated_params)
             f_pred = (estimated_params[0] * data['a'] + 
-                     estimated_params[1] * data['v'] + 
-                     estimated_params[2] * data['x'])
+                    estimated_params[1] * data['v'] + 
+                    estimated_params[2] * data['x'])
             rmse = calculate_rmse(data['f'], f_pred)
+            
+            # 최적화 완료 로깅
+            self.logger.info("\nParameter estimation completed successfully.")
             
             return {
                 'estimated_params': estimated_params,
@@ -81,18 +127,21 @@ class Experiment:
             }
             
         except Exception as e:
-            print(f"Error during data analysis: {str(e)}")
+            self.logger.error(f"\nError during data analysis: {str(e)}")
             raise
-
+        
     def generate_log_message(self, data, results):
         """실험 결과에 대한 로그 메시지 생성"""
         try:
-            natural_freq = np.sqrt(self.config['k']/self.config['m']) / (2*np.pi)  # Hz
+            # 최적화 과정의 상세 로그가 이미 기록되어 있으므로,
+            # 여기서는 최종 요약 정보만 추가
+            natural_freq = np.sqrt(self.config['k']/self.config['m']) / (2*np.pi)
             damping_ratio = self.config['c'] / (2 * np.sqrt(self.config['m']*self.config['k']))
             
-            log_message = f"""
-Experiment Results ({self.timestamp})
-==============================
+            summary_message = f"""
+===============================
+    Final Summary Report     
+===============================
 Method: {self.method.upper()}
 
 System Characteristics:
@@ -112,32 +161,24 @@ Parameter errors (%): [{results['errors'][0]:.2f}, {results['errors'][1]:.2f}, {
 Force prediction RMSE: {results['rmse']:.6f}
 
 Optimization Information:
-----------------------
-"""
+----------------------"""
+            
             # optimization_info가 있으면 추가
             if 'optimization_info' in results:
                 opt_info = results['optimization_info']
-                # 학습 이력이 있는 경우 (PINN, MLP)
-                if 'training_history' in opt_info:
-                    history = opt_info['training_history']
-                    log_message += f"Final Loss: {history['loss']:.6f}\n"
-                    if 'data_loss' in history:
-                        log_message += f"Final Data Loss: {history['data_loss']:.6f}\n"
-                    if 'physics_loss' in history:
-                        log_message += f"Final Physics Loss: {history['physics_loss']:.6f}\n"
-                    log_message += f"Device: {opt_info.get('device', 'cpu')}\n"
-                
-                # 최적화 정보가 있는 경우 (least squares)
                 if 'success' in opt_info:
-                    log_message += f"Optimization Success: {opt_info['success']}\n"
-                    log_message += f"Message: {opt_info['message']}\n"
-                    if 'n_iter' in opt_info:
-                        log_message += f"Iterations: {opt_info['n_iter']}\n"
-                    if 'final_func_value' in opt_info:
-                        log_message += f"Final Function Value: {opt_info['final_func_value']:.6f}\n"
+                    summary_message += f"\nOptimization Success: {opt_info['success']}"
+                if 'message' in opt_info:
+                    summary_message += f"\nMessage: {opt_info['message']}"
+                if 'n_iter' in opt_info:
+                    summary_message += f"\nIterations: {opt_info['n_iter']}"
+                if 'final_func_value' in opt_info:
+                    summary_message += f"\nFinal Function Value: {opt_info['final_func_value']:.6f}"
+                    
+            summary_message += "\n==============================="
             
-            return log_message
-            
+            return summary_message
+                
         except Exception as e:
             print(f"Error generating log message: {str(e)}")
             raise
@@ -205,11 +246,18 @@ Optimization Information:
     def run(self):
         """Run the complete experiment workflow"""
         print(f"\nRunning experiment with {self.method.upper()}...")
+        self.logger.info(f"Starting experiment with method: {self.method}")
         
         try:
-            # Generate and analyze data
+            # Generate data
             data = self.generate_data()
+            
+            # Analyze data - 실제 최적화 과정이 여기서 로깅됨
             results = self.analyze_data(data)
+            
+            # Generate and log final summary
+            summary_message = self.generate_log_message(data, results)
+            self.logger.info(summary_message)
             
             # Save results
             self.save_results(data, results)
@@ -224,7 +272,7 @@ Optimization Information:
             print(f"  └── logs/")
             
             return data, results
-            
+                
         except Exception as e:
             print(f"\nError during experiment: {str(e)}")
             raise

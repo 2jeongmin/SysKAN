@@ -109,7 +109,7 @@ def plot_training_curves(history, save_dir=None, timestamp=None):
     """학습 과정 시각화"""
     set_plot_style()
     
-    # 손실 함수 그래프 (선형 스케일)
+    # 그래프 생성 부분은 동일
     fig_linear, ax_linear = plt.subplots()
     ax_linear.plot(history['loss'], 'b-', label='Total Loss')
     if 'data_loss' in history:
@@ -123,7 +123,7 @@ def plot_training_curves(history, save_dir=None, timestamp=None):
     ax_linear.legend()
     plt.tight_layout()
     
-    # 손실 함수 그래프 (로그 스케일)
+    # 로그 스케일 그래프
     fig_log, ax_log = plt.subplots()
     ax_log.semilogy(history['loss'], 'b-', label='Total Loss')
     if 'data_loss' in history:
@@ -137,7 +137,7 @@ def plot_training_curves(history, save_dir=None, timestamp=None):
     ax_log.legend()
     plt.tight_layout()
     
-    # 파라미터 수렴 그래프 (파라미터가 있는 경우)
+    # 파라미터 수렴 그래프
     fig_params = None
     if 'params' in history and history['params']:
         fig_params, ax_params = plt.subplots()
@@ -154,7 +154,12 @@ def plot_training_curves(history, save_dir=None, timestamp=None):
     
     if save_dir and timestamp:
         save_dir = Path(save_dir)
+        
+        # 필요한 모든 디렉토리 생성
         training_dir = save_dir / 'figures' / 'training'
+        data_dir = save_dir / 'data'
+        training_dir.mkdir(parents=True, exist_ok=True)
+        data_dir.mkdir(parents=True, exist_ok=True)
         
         # 그래프 저장
         save_figure(fig_linear, training_dir / f'loss_linear_{timestamp}.png')
@@ -179,7 +184,7 @@ def plot_training_curves(history, save_dir=None, timestamp=None):
             })
         
         df = pd.DataFrame(df_data)
-        csv_path = save_dir / 'data' / f'training_history_{timestamp}.csv'
+        csv_path = data_dir / f'training_history_{timestamp}.csv'
         df.to_csv(csv_path, index=False)
         
         return {

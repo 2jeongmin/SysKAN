@@ -1,0 +1,5 @@
+Starting experiment with method: pinn
+
+Starting parameter estimation...
+
+Error during data analysis: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.

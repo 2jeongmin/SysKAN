@@ -1,0 +1,40 @@
+{
+    "timestamp": "20250113_214444",
+    "method": "least_squares",
+    "configuration": {
+        "m": 1.0,
+        "c": 0.1,
+        "k": 5.0,
+        "force_type": "sine",
+        "amplitude": 1.0,
+        "freq": 1.0,
+        "random_seed": 42,
+        "x0": 0.0,
+        "v0": 0.0,
+        "t_max": 10.0,
+        "dt": 0.02,
+        "noise_std": 0.05
+    },
+    "true_parameters": [
+        1.0,
+        0.1,
+        5.0
+    ],
+    "estimated_parameters": [
+        1.0000000905021933,
+        0.10000181661528329,
+        5.0000125209146615
+    ],
+    "parameter_errors": [
+        9.050219329509446e-06,
+        0.0018166152832843618,
+        0.00025041829323058096
+    ],
+    "force_rmse": 2.0844212342827218e-08,
+    "optimization_info": {
+        "success": true,
+        "message": "Optimization completed with multiple initial guesses",
+        "n_trials": 10,
+        "final_func_value": 2.1767507528462813e-13
+    }
+}

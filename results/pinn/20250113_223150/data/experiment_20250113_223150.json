@@ -1,0 +1,57 @@
+{
+    "timestamp": "20250113_223150",
+    "method": "pinn",
+    "configuration": {
+        "m": 1.0,
+        "c": 0.1,
+        "k": 5.0,
+        "force_type": "sine",
+        "amplitude": 1.0,
+        "freq": 1.0,
+        "random_seed": 42,
+        "x0": 0.0,
+        "v0": 0.0,
+        "t_max": 10.0,
+        "dt": 0.02,
+        "noise_std": 0.05
+    },
+    "true_parameters": [
+        1.0,
+        0.1,
+        5.0
+    ],
+    "estimated_parameters": [
+        1.0013597011566162,
+        0.09868326783180237,
+        4.998508930206299
+    ],
+    "parameter_errors": [
+        0.1359701156616211,
+        1.3167321681976374,
+        0.029821395874023438
+    ],
+    "force_rmse": 0.00011109469129270256,
+    "optimization_info": {
+        "success": true,
+        "message": "PINN parameter estimation completed",
+        "n_epochs": 2000,
+        "final_loss": 0.012579860165715218,
+        "training_history": {
+            "loss": 0.012579860165715218,
+            "data_loss": 0.012579860165715218,
+            "physics_loss": 0.0,
+            "final_parameters": {
+                "m": 1.0013597011566162,
+                "c": 0.09868326783180237,
+                "k": 4.998508930206299
+            }
+        },
+        "plot_paths": {
+            "loss_linear": "results/pinn/20250113_223150/figures/training/loss_linear_20250113_223150.png",
+            "loss_log": "results/pinn/20250113_223150/figures/training/loss_log_20250113_223150.png",
+            "parameters": "results/pinn/20250113_223150/figures/training/parameters_20250113_223150.png",
+            "history_csv": "results/pinn/20250113_223150/data/training_history_20250113_223150.csv"
+        },
+        "device": "cuda"
+    }
+}

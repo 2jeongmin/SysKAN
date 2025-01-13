@@ -1,0 +1,5 @@
+Starting experiment with method: pinn
+
+Starting parameter estimation...
+
+Error during data analysis: estimate_parameters_pinn() got an unexpected keyword argument 'logger'

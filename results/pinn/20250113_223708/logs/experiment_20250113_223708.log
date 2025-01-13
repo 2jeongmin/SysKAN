@@ -1,0 +1,5 @@
+Starting experiment with method: pinn
+
+Starting parameter estimation...
+
+Error during data analysis: Cannot save file into a non-existent directory: 'results/pinn/20250113_223708/figures/training/data'

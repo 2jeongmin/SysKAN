@@ -1,0 +1,38 @@
+{
+    "timestamp": "20250113_221115",
+    "method": "ols",
+    "configuration": {
+        "m": 1.0,
+        "c": 0.1,
+        "k": 5.0,
+        "force_type": "sine",
+        "amplitude": 1.0,
+        "freq": 1.0,
+        "random_seed": 42,
+        "x0": 0.0,
+        "v0": 0.0,
+        "t_max": 10.0,
+        "dt": 0.02,
+        "noise_std": 0.05
+    },
+    "true_parameters": [
+        1.0,
+        0.1,
+        5.0
+    ],
+    "estimated_parameters": [
+        1.0000000402906484,
+        0.09999980080513492,
+        4.9999998968895945
+    ],
+    "parameter_errors": [
+        4.0290648373186855e-06,
+        0.000199194865088681,
+        2.062208110942265e-06
+    ],
+    "force_rmse": 3.61090049336435e-09,
+    "optimization_info": {
+        "success": true,
+        "final_func_value": 6.532339788862431e-15
+    }
+}
