@@ -2,4 +2,4 @@ Starting experiment with method: pinn
 
 Starting parameter estimation...
 
-Error during data analysis: 'loss'
+Error during data analysis: name 'no_improve_count' is not defined

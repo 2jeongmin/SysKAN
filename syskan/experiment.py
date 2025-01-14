@@ -129,7 +129,7 @@ class Experiment:
         except Exception as e:
             self.logger.error(f"\nError during data analysis: {str(e)}")
             raise
-        
+
     def generate_log_message(self, data, results):
         """실험 결과에 대한 로그 메시지 생성"""
         try:
@@ -186,46 +186,59 @@ Optimization Information:
     def save_results(self, data, results):
         """Save experiment results and generate visualizations"""
         try:
-            # JSON으로 저장할 수 있도록 numpy 배열을 list로 변환
+            # Convert numpy arrays and tensors to basic Python types
+            def convert_to_basic_types(obj):
+                if isinstance(obj, (np.ndarray, np.generic)):
+                    return obj.tolist()
+                elif hasattr(obj, 'item'):  # PyTorch tensors
+                    return obj.item()
+                elif isinstance(obj, dict):
+                    return {k: convert_to_basic_types(v) for k, v in obj.items()}
+                elif isinstance(obj, list):
+                    return [convert_to_basic_types(item) for item in obj]
+                elif isinstance(obj, (int, float, str, bool)):
+                    return obj
+                else:
+                    return str(obj)
+
+            # Prepare results dictionary
             results_dict = {
                 'timestamp': self.timestamp,
                 'method': self.method,
-                'configuration': self.config,
-                'true_parameters': data['true_params'].tolist(),
-                'estimated_parameters': results['estimated_params'].tolist(),
-                'parameter_errors': results['errors'].tolist(),
+                'configuration': convert_to_basic_types(self.config),
+                'true_parameters': convert_to_basic_types(data['true_params']),
+                'estimated_parameters': convert_to_basic_types(results['estimated_params']),
+                'parameter_errors': convert_to_basic_types(results['errors']),
                 'force_rmse': float(results['rmse'])
             }
-            
-            # optimization_info가 있으면 추가
+
+            # Add optimization info if available
             if 'optimization_info' in results:
-                # numpy 배열이나 다른 직렬화 불가능한 객체 처리
-                opt_info = results['optimization_info']
-                if isinstance(opt_info, dict):
-                    # dictionary 내의 numpy 배열을 list로 변환
-                    opt_info = {k: v.tolist() if isinstance(v, np.ndarray) else v 
-                              for k, v in opt_info.items()}
-                results_dict['optimization_info'] = opt_info
-            
+                results_dict['optimization_info'] = convert_to_basic_types(results['optimization_info'])
+
             # JSON 파일로 저장
             json_path = self.result_dir / 'data' / f'experiment_{self.timestamp}.json'
-            with open(json_path, 'w') as f:
+            with open(json_path, 'w', encoding='utf-8') as f:
                 json.dump(results_dict, f, indent=4)
-                
+
             # 로그 파일 생성 및 저장
             log_message = self.generate_log_message(data, results)
             log_path = self.result_dir / 'logs' / f'experiment_{self.timestamp}.log'
-            with open(log_path, 'w') as f:
+            with open(log_path, 'w', encoding='utf-8') as f:
                 f.write(log_message)
-                
+
             # NumPy 배열 저장
             npz_path = self.result_dir / 'data' / f'time_series_{self.timestamp}.npz'
             np.savez(
                 npz_path,
-                t=data['t'], x=data['x'], v=data['v'], a=data['a'],
-                f=data['f'], f_pred=results['f_pred']
+                t=data['t'], 
+                x=data['x'], 
+                v=data['v'], 
+                a=data['a'],
+                f=data['f'], 
+                f_pred=results.get('f_pred', np.zeros_like(data['f']))
             )
-            
+
             # 시각화 저장
             save_all_figures(
                 self.method,
@@ -236,9 +249,9 @@ Optimization Information:
                 v=data['v'],
                 a=data['a'],
                 f=data['f'],
-                f_pred=results['f_pred']
+                f_pred=results.get('f_pred', np.zeros_like(data['f']))
             )
-            
+
         except Exception as e:
             print(f"Error saving results: {str(e)}")
             raise
