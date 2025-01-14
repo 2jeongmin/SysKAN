@@ -199,19 +199,21 @@ def plot_training_curves(history, save_dir=None, timestamp=None):
         
         # 학습 데이터를 CSV로 저장
         df_data = {
-            'epoch': range(len(history['total_loss'])),
-            'total_loss': history['total_loss']
+            'epoch': range(len(history['loss'] if 'loss' in history else history['total_loss'])),
         }
-        if 'data_loss' in history:
-            df_data['data_loss'] = history['data_loss']
-        if 'physics_loss' in history:
-            df_data['physics_loss'] = history['physics_loss']
-        if 'params' in history and history['params']:
-            df_data.update({
-                'mass': [p['m'] for p in history['params']],
-                'damping': [p['c'] for p in history['params']],
-                'stiffness': [p['k'] for p in history['params']]
-            })
+        
+        # MLP 모델용 loss 데이터
+        if 'loss' in history:
+            df_data['train_loss'] = history['loss']
+            if 'val_loss' in history:
+                df_data['val_loss'] = history['val_loss']
+        # PINN 모델용 loss 데이터
+        elif 'total_loss' in history:
+            df_data['total_loss'] = history['total_loss']
+            if 'data_loss' in history:
+                df_data['data_loss'] = history['data_loss']
+            if 'physics_loss' in history:
+                df_data['physics_loss'] = history['physics_loss']
         
         df = pd.DataFrame(df_data)
         data_dir = save_dir / 'data'

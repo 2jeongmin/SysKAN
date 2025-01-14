@@ -1,0 +1,5 @@
+Starting experiment with method: mlp
+
+Starting parameter estimation...
+
+Error during data analysis: plot_training_curves() takes from 1 to 3 positional arguments but 4 were given

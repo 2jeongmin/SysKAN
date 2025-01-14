@@ -1,0 +1,40 @@
+
+===============================
+    Final Summary Report     
+===============================
+Method: MLP
+
+System Characteristics:
+---------------------
+Natural Frequency: 2.25 Hz
+Damping Ratio: 0.053
+
+Configuration:
+-------------
+{
+  "m": 1.0,
+  "c": 1.5,
+  "k": 200.0,
+  "force_type": "sine",
+  "amplitude": 1.0,
+  "freq": 1.0,
+  "random_seed": 42,
+  "x0": 0.0,
+  "v0": 0.0,
+  "t_max": 10.0,
+  "dt": 0.02,
+  "noise_std": 0.05
+}
+
+Parameters:
+----------
+True parameters:      [1.000, 1.500, 200.000]
+Estimated parameters: [0.410, 0.000, 0.066]
+Parameter errors (%): [59.04, 100.00, 99.97]
+Force prediction RMSE: 1.387612
+
+Optimization Information:
+----------------------
+Optimization Success: True
+Message: MLP training and SINDy parameter estimation completed
+===============================

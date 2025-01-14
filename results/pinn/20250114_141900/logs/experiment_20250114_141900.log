@@ -1,0 +1,40 @@
+
+===============================
+    Final Summary Report     
+===============================
+Method: PINN
+
+System Characteristics:
+---------------------
+Natural Frequency: 1.13 Hz
+Damping Ratio: 0.007
+
+Configuration:
+-------------
+{
+  "m": 1.0,
+  "c": 0.1,
+  "k": 50.0,
+  "force_type": "sine",
+  "amplitude": 1.0,
+  "freq": 1.0,
+  "random_seed": 42,
+  "x0": 0.0,
+  "v0": 0.0,
+  "t_max": 10.0,
+  "dt": 0.02,
+  "noise_std": 0.05
+}
+
+Parameters:
+----------
+True parameters:      [1.000, 0.100, 50.000]
+Estimated parameters: [1.000, 0.102, 5.001]
+Parameter errors (%): [0.05, 1.71, 90.00]
+Force prediction RMSE: 0.054389
+
+Optimization Information:
+----------------------
+Optimization Success: True
+Message: PINN parameter estimation completed successfully
+===============================
