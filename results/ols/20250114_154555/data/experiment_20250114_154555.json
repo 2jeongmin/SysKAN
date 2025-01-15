@@ -1,0 +1,43 @@
+{
+    "timestamp": "20250114_154555",
+    "method": "ols",
+    "configuration": {
+        "m": 1.0,
+        "c": 0.1,
+        "k": 50.0,
+        "force_type": "sine",
+        "amplitude": 1.0,
+        "freq": 1.0,
+        "random_seed": 42,
+        "x0": 0.0,
+        "v0": 0.0,
+        "t_max": 10.0,
+        "dt": 0.02,
+        "noise_std": 0.05
+    },
+    "true_parameters": [
+        1.0,
+        0.1,
+        50.0
+    ],
+    "estimated_parameters": [
+        0.9999999607741885,
+        0.10000223895174051,
+        49.99998794054484
+    ],
+    "parameter_errors": [
+        3.922581148785298e-06,
+        0.0022389517405074777,
+        2.4118910317838527e-05
+    ],
+    "force_rmse": 2.1053206721747946e-08,
+    "optimization_info": {
+        "success": true,
+        "message": "Optimization terminated successfully.",
+        "final_func_value": 2.2206199414759506e-13,
+        "n_iter": 11,
+        "n_fev": 68,
+        "n_jev": 17,
+        "status": 0
+    }
+}

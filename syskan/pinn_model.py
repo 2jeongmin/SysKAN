@@ -30,9 +30,9 @@ class PINN(nn.Module):
         self.network = nn.Sequential(*layers)
         
         # Initialize physical parameters with wider ranges
-        self.mass = nn.Parameter(torch.tensor(np.random.uniform(0.5, 2.0), dtype=torch.float32))
+        self.mass = nn.Parameter(torch.tensor(np.random.uniform(0.1, 2.0), dtype=torch.float32))
         self.damping = nn.Parameter(torch.tensor(np.random.uniform(0.05, 0.5), dtype=torch.float32))
-        self.stiffness = nn.Parameter(torch.tensor(np.random.uniform(2.0, 100.0), dtype=torch.float32))
+        self.stiffness = nn.Parameter(torch.tensor(np.random.uniform(10.0, 50.0), dtype=torch.float32))
         
         # Register normalizers as buffers
         self.register_buffer('x_mean', torch.tensor(0.0))
