@@ -1,0 +1,3 @@
+Starting experiment with method: kan
+Error in KAN model training: 'train_label'
+Falling back to OLS estimation method

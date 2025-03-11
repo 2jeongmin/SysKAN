@@ -1,0 +1,7 @@
+architecture,best_config_m,best_error_m,worst_config_m,worst_error_m,best_config_c,best_error_c,worst_config_c,worst_error_c,best_config_k,best_error_k,worst_config_k,worst_error_k
+"[3,5,1]",resonance_freq,12.834720403047273,medium_mass,99.8,very_long_duration,3.6082248300317593e-13,overdamped,98.6093639123889,heavy_mass,0.0,extreme_noise,373.7660389395131
+"[3,8,1]",resonance_freq,12.922361460478516,heavy_mass,99.94142369958892,large_initial_velocity,1.2490009027033013e-12,overdamped,99.12652574055862,heavy_mass,0.0,medium_spring,180.6611478662448
+"[3,13,1]",resonance_freq,12.75887361998832,heavy_mass,99.67425240051972,random_high_amplitude,3.6082248300317593e-13,overdamped,99.9,heavy_mass,0.0,coarse_time_step,395.7139338745952
+"[3,5,3,1]",resonance_freq,21.20851886967201,medium_mass,99.56656103132092,very_long_duration,3.6082248300317593e-13,overdamped,97.83533627229048,light_mass,0.0,underdamped,89.37490784748692
+"[3,5,5,1]",underdamped,0.0,heavy_mass,99.45931734814036,random_high_amplitude,3.6082248300317593e-13,critically_damped,99.77628635346755,heavy_mass,0.0,fine_time_step,353.840162141476
+"[3,7,5,5,1]",large_initial_displacement,14.206013632677516,underdamped,101.30177473226053,very_long_duration,3.6082248300317593e-13,critically_damped,186.77524828086968,heavy_mass,0.0,light_mass,165.41435253445852

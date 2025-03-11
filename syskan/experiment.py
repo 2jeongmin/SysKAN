@@ -5,9 +5,10 @@ from datetime import datetime
 import numpy as np
 from pathlib import Path
 from syskan.data_generator import newmark_beta_1dof
-from syskan.evaluation import calculate_error, calculate_rmse
+from syskan.evaluation import evaluate_prediction, print_evaluation_results
 from syskan.parameter_estimation import estimate_parameters_ols
 from syskan.mlp_model import estimate_parameters_mlp
+from syskan.mlp_optuna_model import estimate_parameters_mlp_optuna
 from syskan.pinn_model import estimate_parameters_pinn
 from syskan.visualization import save_all_figures
 
@@ -24,6 +25,7 @@ class Experiment:
         self.estimators = {
             'ols': estimate_parameters_ols,
             'mlp': estimate_parameters_mlp,
+            'mlp_optuna' : estimate_parameters_mlp_optuna,
             'pinn': estimate_parameters_pinn
         }
 
@@ -86,46 +88,67 @@ class Experiment:
             raise ValueError(f"Method {self.method} not implemented")
             
         try:
-            # 최적화 시작 로깅
-            self.logger.info("\nStarting parameter estimation...")
-            
-            # 메서드별로 다른 파라미터 설정
-            common_params = {
-                'method': self.method,
-                'timestamp': self.timestamp,
-                'base_dir': self.result_dir,
-                'verbose': True
-            }
-            
-            # OLS 메서드의 경우에만 logger 전달
-            if self.method == 'ols':
-                common_params['logger'] = self.logger
-            
-            # 파라미터 추정 수행
-            estimator = self.estimators[self.method]
-            estimated_params, opt_info = estimator(
+            # 원본 데이터 범위 기록
+            self.logger.info("\nOriginal Data Ranges:")
+            self.logger.info(f"x: [{data['x'].min():.6f}, {data['x'].max():.6f}]")
+            self.logger.info(f"v: [{data['v'].min():.6f}, {data['v'].max():.6f}]")
+            self.logger.info(f"a: [{data['a'].min():.6f}, {data['a'].max():.6f}]")
+            self.logger.info(f"f: [{data['f'].min():.6f}, {data['f'].max():.6f}]")
+
+            # 파라미터 추정
+            estimated_params, opt_info = self.estimators[self.method](
                 data['x'], data['v'], data['a'], data['f'],
-                **common_params
+                method=self.method,
+                timestamp=self.timestamp,
+                base_dir=self.result_dir,
+                verbose=True
             )
-            
-            # 오차 및 RMSE 계산
-            errors = calculate_error(data['true_params'], estimated_params)
-            f_pred = (estimated_params[0] * data['a'] + 
-                    estimated_params[1] * data['v'] + 
-                    estimated_params[2] * data['x'])
-            rmse = calculate_rmse(data['f'], f_pred)
-            
-            # 최적화 완료 로깅
-            self.logger.info("\nParameter estimation completed successfully.")
-            
+
+            # 예측 수행 및 스케일 처리
+            if hasattr(opt_info, 'scaler_info'):
+                scaler_info = opt_info['scaler_info']
+                # 정규화된 입력으로 예측
+                X = np.stack([data['x'], data['v'], data['a']], axis=1)
+                X_scaled = scaler_info['x_scaler'].transform(X)
+                f_pred_scaled = (estimated_params[0] * X_scaled[:, 2] + 
+                            estimated_params[1] * X_scaled[:, 1] + 
+                            estimated_params[2] * X_scaled[:, 0])
+                # 역정규화
+                f_pred = scaler_info['f_scaler'].inverse_transform(
+                    f_pred_scaled.reshape(-1, 1)
+                ).flatten()
+            else:
+                scaler_info = None
+                f_pred = (estimated_params[0] * data['a'] + 
+                        estimated_params[1] * data['v'] + 
+                        estimated_params[2] * data['x'])
+
+            # 예측 결과 범위 기록
+            self.logger.info("\nPrediction Ranges:")
+            self.logger.info(f"f_pred: [{f_pred.min():.6f}, {f_pred.max():.6f}]")
+
+            # 종합적인 평가 수행
+            metrics = evaluate_prediction(
+                true_values=data['f'],
+                predicted_values=f_pred,
+                true_params=data['true_params'],
+                estimated_params=estimated_params,
+                scaler_info=scaler_info
+            )
+
+            # 평가 결과 출력
+            print_evaluation_results(metrics, self.logger)
+
             return {
                 'estimated_params': estimated_params,
-                'errors': errors,
-                'rmse': rmse,
+                'errors': metrics.param_errors,
+                'rmse': metrics.rmse,
+                'rel_error': metrics.relative_error,
+                'max_error': metrics.max_error,
                 'f_pred': f_pred,
                 'optimization_info': opt_info
             }
-            
+                
         except Exception as e:
             self.logger.error(f"\nError during data analysis: {str(e)}")
             raise

@@ -1,0 +1,6 @@
+Starting experiment with method: kan
+Model structure visualization saved to: results/kan/20250310_112321/figures/model/kan_model_structure_20250310_112321.png
+Symbolic Formula (Custom Library): ([0.000400741468851855*x_1 + 3.75815597619382e-5*x_2 + 0.000265525114815864*x_3 - 0.00526690986574989, 0.00278412600960265*x_1 - 0.000219677216073721*x_2 + 0.000130281951474322*x_3 + 0.00527124345041916, -0.0100833249407281*x_1 + 0.00072596797806997*x_2 + 1.89200516474387e-5*x_3 + 0.00451713995229621], [x_1, x_2, x_3])
+Error estimating parameters from KAN model: only one element tensors can be converted to Python scalars
+Using default parameter values
+Estimated parameters from KAN model: [0.  0.1 5. ]

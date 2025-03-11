@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.optimize import minimize
-from syskan.evaluation import calculate_error
+from syskan.evaluation import calculate_parameter_errors as calculate_error
 from syskan.visualization import plot_force_comparison
 
 def estimate_parameters_ols(x, v, a, f, method=None, timestamp=None, base_dir=None, logger=None, verbose=True):

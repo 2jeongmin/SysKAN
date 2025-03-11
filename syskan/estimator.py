@@ -1,5 +1,6 @@
 from syskan.parameter_estimation import estimate_parameters_ols
 from syskan.mlp_model import estimate_parameters_mlp
+from syskan.mlp_optuna_model import estimate_parameters_mlp_optuna
 from syskan.pinn_model import estimate_parameters_pinn
 
 class ParameterEstimator:
@@ -8,6 +9,7 @@ class ParameterEstimator:
         self.estimators = {
             'ols': estimate_parameters_ols,
             'mlp': estimate_parameters_mlp,
+            'mlp_optuna': estimate_parameters_mlp_optuna,
             'pinn': estimate_parameters_pinn
         }
     

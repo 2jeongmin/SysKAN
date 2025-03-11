@@ -250,3 +250,58 @@ def save_all_figures(method, timestamp, base_dir, t, x, v, a, f, f_pred):
         'response': {k: str(v) for k, v in save_paths.items()},
         'force': str(force_path)
     }
+
+def save_kan_model_visualization(model, base_dir, timestamp):
+    """
+    KAN 모델의 구조와 활성화 함수를 시각화하여 저장합니다.
+    
+    Parameters:
+    -----------
+    model : KAN model
+        시각화할 KAN 모델
+    base_dir : str or Path
+        저장할 기본 디렉토리 경로 (SysKAN/results/kan/[timestamp]/)
+    timestamp : str
+        파일명에 포함할 타임스탬프
+    
+    Returns:
+    --------
+    dict
+        저장된 시각화 이미지 경로
+    """
+    import matplotlib.pyplot as plt
+    from pathlib import Path
+    
+    base_dir = Path(base_dir)
+    kan_vis_dir = base_dir / 'figures' / 'model'
+    kan_vis_dir.mkdir(parents=True, exist_ok=True)
+    
+    result_paths = {}
+    
+    # 모델 구조 시각화
+    if hasattr(model, 'plot'):
+        plt.figure(figsize=(12, 8))
+        model.plot()
+        plt.title('KAN Model Structure')
+        plt.tight_layout()
+        
+        structure_path = kan_vis_dir / f'kan_structure_{timestamp}.png'
+        plt.savefig(structure_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        result_paths['model_structure'] = str(structure_path)
+    
+    # 활성화 함수 시각화 (KAN 모델에 따라 다를 수 있음)
+    if hasattr(model, 'plot_activations'):
+        plt.figure(figsize=(15, 10))
+        model.plot_activations()
+        plt.title('KAN Activation Functions')
+        plt.tight_layout()
+        
+        activations_path = kan_vis_dir / f'kan_activations_{timestamp}.png'
+        plt.savefig(activations_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        result_paths['activations'] = str(activations_path)
+    
+    return result_paths

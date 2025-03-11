@@ -1,0 +1,40 @@
+Summary Statistics for KAN Experiments
+==================================================
+
+          m_true     c_true     k_true  ...       k_error       rmse    runtime
+count  23.000000  23.000000  23.000000  ...  2.300000e+01  23.000000  23.000000
+mean    1.978261   0.718261   7.000000  ...  5.346587e+01   8.160475  68.528118
+std     4.018362   2.218904   9.472448  ...  1.168924e+02  19.076248   1.394656
+min     0.500000   0.050000   1.000000  ...  0.000000e+00   0.000149  67.205019
+25%     1.000000   0.100000   5.000000  ...  3.552714e-14   0.000830  67.623378
+50%     1.000000   0.100000   5.000000  ...  7.105427e-14   0.003595  68.197138
+75%     1.000000   0.100000   5.000000  ...  1.717733e+01   4.591403  68.664259
+max    20.000000  10.000000  50.000000  ...  3.957139e+02  76.664260  71.763336
+
+[8 rows x 11 columns]
+
+Configurations Ranked by Average Parameter Error
+--------------------------------------------------
+1. resonance_freq: 11.91%
+2. low_freq: 12.50%
+3. large_initial_displacement: 24.22%
+4. random_high_amplitude: 33.00%
+5. large_initial_velocity: 33.00%
+6. large_amplitude: 34.67%
+7. stiff_spring: 35.36%
+8. medium_noise: 35.42%
+9. no_noise: 35.42%
+10. small_amplitude: 35.49%
+11. fine_time_step: 38.63%
+12. soft_spring: 40.41%
+13. medium_mass: 40.84%
+14. high_freq: 42.42%
+15. underdamped: 57.30%
+16. very_long_duration: 63.00%
+17. heavy_mass: 63.22%
+18. critically_damped: 66.26%
+19. overdamped: 66.30%
+20. light_mass: 69.16%
+21. medium_spring: 71.02%
+22. extreme_noise: 135.62%
+23. coarse_time_step: 143.25%

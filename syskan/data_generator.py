@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_force_func(force_type='none', amplitude=1.0, freq=1.0, random_seed=None):
+def get_force_func(force_type='none', amplitude=1.0, freq=1.0, random_seed=None, **kwargs):
     """
     외력 함수를 생성해 반환합니다.
     
@@ -26,6 +26,13 @@ def get_force_func(force_type='none', amplitude=1.0, freq=1.0, random_seed=None)
         return lambda t: amplitude * np.sin(2.0 * np.pi * freq * t)
     elif force_type == 'random':
         return lambda t: amplitude * rng.normal()
+    elif force_type == 'combined_sine':
+        # 두 개의 사인파를 합성한 외력
+        amplitude1 = kwargs.get('amplitude1', amplitude)
+        freq1 = kwargs.get('freq1', freq)
+        amplitude2 = kwargs.get('amplitude2', amplitude/2)
+        freq2 = kwargs.get('freq2', freq*2)
+        return lambda t: amplitude1 * np.sin(2.0 * np.pi * freq1 * t) + amplitude2 * np.sin(2.0 * np.pi * freq2 * t)
     else:
         return lambda t: 0.0
 

@@ -1,0 +1,2 @@
+Starting experiment with method: kan
+Predicted Symbolic Formula: ([0.874237172517684*x_3 + 16.0029352511077 - 9.26148301829686/(-x_1 - 0.76086958859946)**2], [x_1, x_2, x_3])
