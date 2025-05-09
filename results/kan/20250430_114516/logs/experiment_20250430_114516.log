@@ -1,0 +1,38 @@
+
+===============================
+    Final Summary Report     
+===============================
+Method: KAN
+
+System Characteristics:
+---------------------
+Natural Frequency: 0.36 Hz
+Damping Ratio: 1.000
+
+Configuration:
+-------------
+{
+  "m": 1.0,
+  "c": 4.47,
+  "k": 5.0,
+  "force_type": "sine",
+  "amplitude": 1.0,
+  "freq": 1.0,
+  "random_seed": 42,
+  "x0": 1.0,
+  "v0": 0.0,
+  "t_max": 10.0,
+  "dt": 0.02,
+  "noise_std": 0.05
+}
+
+Parameters:
+----------
+True parameters:      [1.000, 4.470, 5.000]
+Estimated parameters: [0.010, 0.122, 5.000]
+Parameter errors (%): [99.00, 97.28, 0.00]
+Force prediction RMSE: 59.725955
+
+Optimization Information:
+----------------------
+===============================

@@ -1,0 +1,50 @@
+KAN Configuration Test Results
+============================
+
+Total configurations tested: 18
+Valid results: 18
+
+Top 5 Configurations:
+-----------------
+1. width_3-5-1_grid_7_k_3
+   Mass Error: 99.00%
+   Damping Error: 0.00%
+   Stiffness Error: 3.92%
+   Avg Error: 34.31%
+   Confidence: 0.18
+
+2. width_3-5-5-1_grid_11_k_3
+   Mass Error: 99.00%
+   Damping Error: 0.00%
+   Stiffness Error: 11.82%
+   Avg Error: 36.94%
+   Confidence: -1.10
+
+3. width_3-13-1_grid_11_k_3
+   Mass Error: 95.74%
+   Damping Error: 0.00%
+   Stiffness Error: 16.80%
+   Avg Error: 37.51%
+   Confidence: 0.28
+
+4. width_3-5-1_grid_11_k_3
+   Mass Error: 99.00%
+   Damping Error: 0.00%
+   Stiffness Error: 18.25%
+   Avg Error: 39.08%
+   Confidence: -9.31
+
+5. width_3-7-5-5-1_grid_7_k_3
+   Mass Error: 99.00%
+   Damping Error: 0.00%
+   Stiffness Error: 28.35%
+   Avg Error: 42.45%
+   Confidence: -4.24
+
+
+Worst Mass Estimation:
+Config: width_3-5-1_grid_7_k_3, Error: 99.00%
+
+Best Mass Estimation:
+Config: width_3-5-1_grid_5_k_3, Error: 88.95%
+

@@ -58,7 +58,7 @@ class KANExperiment(Experiment):
         self.logger.info("Initializing KAN model...")
         model = KAN(
             width=[3, 7, 5, 5, 1],  
-            grid=5,                 
+            grid=11,                 
             k=3,                    
             seed=self.config.get('random_seed', 42),  
             device=device

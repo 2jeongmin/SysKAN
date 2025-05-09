@@ -1,0 +1,16 @@
+Starting experiment with method: kan
+Using device: cuda
+Initializing KAN model...
+Training KAN model with LBFGS optimizer...
+History type: <class 'dict'>
+History is not a list type: <class 'dict'>
+History type: <class 'list'>
+History length: 100
+First history entry: {'epoch': 0, 'train_loss': array(0.02811591, dtype=float32)}
+Extracted 20 training loss values
+Extracted 0 test loss values
+Training loss range: [0.00612318841740489, 0.02811591327190399]
+Successfully saved training curves:
+- Linear scale: results/kan/20250430_170011/figures/training/loss_linear_20250430_170011.png
+- Log scale: results/kan/20250430_170011/figures/training/loss_log_20250430_170011.png
+- Data: results/kan/20250430_170011/data/training_history_20250430_170011.json

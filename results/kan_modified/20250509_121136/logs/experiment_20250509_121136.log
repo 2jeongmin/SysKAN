@@ -1,0 +1,32 @@
+2025-05-09 12:11:36,949 - INFO - Initialized ModifiedKANExperiment with timestamp 20250509_121136
+2025-05-09 12:11:36,949 - INFO - KAN hyperparameters: width=[3, 8, 1], grid=7, k=3
+2025-05-09 12:11:36,949 - INFO - Starting KAN experiment
+2025-05-09 12:11:36,971 - INFO - Generated data with parameters: m=1.0, c=0.1, k=5.0
+2025-05-09 12:11:36,972 - INFO - Data shapes: t=(501,), x=(501,), v=(501,), a=(501,), f=(501,)
+2025-05-09 12:11:36,972 - INFO - Data ranges: x=[0.222, 1.000], v=[-0.299, 0.128], a=[-16.128, 16.142], f=[-15.005, 19.955]
+2025-05-09 12:11:36,972 - INFO - Using device: cuda
+2025-05-09 12:11:36,973 - INFO - Standard deviations: x_std=0.2206, v_std=0.1237, a_std=11.9054, f_std=11.9456
+2025-05-09 12:11:36,976 - INFO - Linear regression check: params=[1.  0.1 5. ], R²=1.0000
+2025-05-09 12:11:36,977 - INFO - Condition number: 101.04
+2025-05-09 12:11:36,977 - INFO - Term contributions: m*a=91.43%, c*v=0.10%, k*x=8.47%
+2025-05-09 12:11:36,977 - WARNING - Damping term contributes <10% to force. Damping coefficient estimation may be difficult.
+2025-05-09 12:11:36,978 - WARNING - Stiffness term contributes <10% to force. Stiffness estimation may be difficult.
+2025-05-09 12:11:36,979 - INFO - Initializing KAN model
+2025-05-09 12:11:37,021 - INFO - Training KAN model with LBFGS optimizer
+2025-05-09 12:13:00,257 - WARNING - Training history has unexpected format
+2025-05-09 12:13:00,260 - WARNING - Unexpected history format: <class 'dict'>
+2025-05-09 12:13:00,901 - INFO - Extracted symbolic formula: ([-0.11981261557707*x_1 - 0.0143480582680083*x_2 + 0.266922656933375*x_3 - 0.356300912145481], [x_1, x_2, x_3])
+2025-05-09 12:13:00,901 - INFO - Starting improved parameter extraction
+2025-05-09 12:13:01,068 - INFO - Symbolic formula: ([-0.11981261557707*x_1 - 0.0143480582680083*x_2 + 0.266922656933375*x_3 - 0.356300912145481], [x_1, x_2, x_3])
+2025-05-09 12:13:01,069 - INFO - Successfully extracted parameters from formula: [ 0.26692266  0.01434806 -0.11981262]
+2025-05-09 12:13:01,070 - INFO - Linear regression parameters: [1.  0.1 5. ] (R²=1.0000)
+2025-05-09 12:13:01,110 - INFO - KAN probing parameters: [ 0.26782299 -1.38533933 -6.48808392]
+2025-05-09 12:13:01,159 - INFO - Differentiation parameters: [ 0.26692757 -0.01434107 -0.11981209]
+2025-05-09 12:13:01,159 - INFO - Symbolic parameters look suspicious, using with lower weight
+2025-05-09 12:13:01,160 - INFO - Final weighted parameters: [0.63373143 0.01       0.5296123 ] with confidence 0.70
+2025-05-09 12:13:01,160 - INFO - Estimated parameters: [0.63373143 0.01       0.5296123 ] with confidence 0.70
+2025-05-09 12:13:01,185 - INFO - Parameter errors: [36.62685715 90.         89.40775396]
+2025-05-09 12:13:01,186 - INFO - RMSE: 10.183475
+2025-05-09 12:13:21,816 - INFO - Model visualization saved to results/kan_modified/20250509_121136/figures/model/kan_structure_20250509_121136.png
+2025-05-09 12:13:24,205 - INFO - Results saved to results/kan_modified/20250509_121136/data/experiment_20250509_121136.json and results/kan_modified/20250509_121136/data/time_series_20250509_121136.npz
+2025-05-09 12:13:24,205 - INFO - KAN experiment completed successfully

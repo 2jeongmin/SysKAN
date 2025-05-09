@@ -1,0 +1,36 @@
+{
+    "timestamp": "20250509_121324",
+    "config": {
+        "m": 1.0,
+        "c": 0.1,
+        "k": 5.0,
+        "force_type": "none",
+        "amplitude": 1.0,
+        "freq": 1.0,
+        "random_seed": 42,
+        "x0": 1.0,
+        "v0": 0.0,
+        "t_max": 10.0,
+        "dt": 0.02,
+        "noise_std": 0.05
+    },
+    "true_parameters": [
+        1.0,
+        0.1,
+        5.0
+    ],
+    "estimated_parameters": [
+        0.5211202912394234,
+        0.01,
+        2.466250830607804
+    ],
+    "parameter_errors": [
+        47.887970876057665,
+        90.0,
+        50.674983387843916
+    ],
+    "force_rmse": 14.65660144872772,
+    "confidence_score": 0.7,
+    "estimation_status": "high_confidence",
+    "symbolic_formula": "([-0.00205216922538647*x_1 - 0.196090213922541*x_2 + 0.0421552464036683*x_3 + 0.775596204189714], [x_1, x_2, x_3])"
+}

@@ -4,7 +4,7 @@ from pathlib import Path
 from syskan.config import get_experiment_config
 from syskan.experiment import Experiment
 from syskan.models_comparison import compare_methods
-from syskan.kan_model import KANExperiment
+from syskan.modified_kan_model import ModifiedKANExperiment
 
 def load_config(config_name):
     """설정 파일 로드"""
@@ -26,7 +26,7 @@ def run_experiments(methods, config_name=None):
     for method in methods:
         print(f"\nRunning {method.upper()} method...")
         if method == 'kan':
-            experiment = KANExperiment(config)
+            experiment = ModifiedKANExperiment(config)
         else:
             experiment = Experiment(method, config)
         results.append(experiment.run())

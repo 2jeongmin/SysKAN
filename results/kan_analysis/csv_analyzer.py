@@ -62,7 +62,9 @@ def load_and_process_data(files, arch_names):
 def create_error_matrices(data):
     """각 파라미터에 대한 에러 행렬 생성"""
     configs = data['config_name'].unique()
-    architectures = sorted(data['architecture'].unique())
+    
+    # 고정된 아키텍처 순서 지정
+    architectures = ["[3,5,1]", "[3,8,1]", "[3,13,1]", "[3,5,3,1]", "[3,5,5,1]", "[3,7,5,5,1]"]
     
     # 각 파라미터에 대한 행렬 초기화
     m_error_matrix = pd.DataFrame(index=configs, columns=architectures)
@@ -88,6 +90,23 @@ def create_error_matrices(data):
 
 def plot_single_parameter_heatmap(error_matrix, title, param_name, output_file=None):
     """단일 파라미터에 대한 히트맵 생성 - 0-100% 컬러맵 사용, 원래 값 표시"""
+    configs = error_matrix.index
+    
+    # 아키텍처 순서 지정
+    architectures = ["[3,5,1]", "[3,8,1]", "[3,13,1]", "[3,5,3,1]", "[3,5,5,1]", "[3,7,5,5,1]"]
+    
+    # 순서가 지정된 아키텍처에 따라 데이터 재정렬
+    ordered_matrix = pd.DataFrame(index=configs, columns=architectures)
+    for config in configs:
+        for arch in architectures:
+            if arch in error_matrix.columns:
+                ordered_matrix.loc[config, arch] = error_matrix.loc[config, arch]
+            else:
+                ordered_matrix.loc[config, arch] = 0
+    
+    # 명시적으로 float로 변환
+    ordered_matrix = ordered_matrix.astype(float)
+    
     # 히트맵 색상 설정 (녹색에서 빨간색)
     cmap = LinearSegmentedColormap.from_list('custom_cmap',
                                          [(0, 'green'), (0.4, 'yellowgreen'),
@@ -97,7 +116,7 @@ def plot_single_parameter_heatmap(error_matrix, title, param_name, output_file=N
     fig, ax = plt.subplots(figsize=(14, 10))
     
     # 히트맵 그리기 - vmin=0, vmax=100으로 설정하여 컬러맵 범위 고정
-    heatmap = sns.heatmap(error_matrix, cmap=cmap, annot=True, fmt=".1f",
+    heatmap = sns.heatmap(ordered_matrix, cmap=cmap, annot=True, fmt=".1f",
                     linewidths=0.5, vmin=0, vmax=100, ax=ax)
     
     # 축 레이블과 제목 설정
@@ -123,7 +142,9 @@ def plot_single_parameter_heatmap(error_matrix, title, param_name, output_file=N
 def plot_divided_cells_heatmap(m_matrix, c_matrix, k_matrix, output_file=None):
     """셀을 세 부분으로 나누어 m, c, k 오차를 표시하는 히트맵 - 0-100% 컬러맵 사용"""
     configs = m_matrix.index
-    architectures = m_matrix.columns
+    
+    # 아키텍처 순서 지정
+    architectures = ["[3,5,1]", "[3,8,1]", "[3,13,1]", "[3,5,3,1]", "[3,5,5,1]", "[3,7,5,5,1]"]
     
     # 히트맵 색상 설정 (녹색에서 빨간색)
     cmap = LinearSegmentedColormap.from_list('custom_cmap',
@@ -153,9 +174,9 @@ def plot_divided_cells_heatmap(m_matrix, c_matrix, k_matrix, output_file=None):
     for i, config in enumerate(configs):
         for j, arch in enumerate(architectures):
             # 각 파라미터 에러 값
-            m_val = m_matrix.loc[config, arch]
-            c_val = c_matrix.loc[config, arch]
-            k_val = k_matrix.loc[config, arch]
+            m_val = m_matrix.loc[config, arch] if arch in m_matrix.columns else 0
+            c_val = c_matrix.loc[config, arch] if arch in c_matrix.columns else 0
+            k_val = k_matrix.loc[config, arch] if arch in k_matrix.columns else 0
             
             # 셀 위치
             y = n_rows - i - 1  # Y축 반전 (위에서 아래로)
